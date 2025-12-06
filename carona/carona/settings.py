@@ -15,6 +15,12 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 
+# ===== STATICFILES (necessário para funcionar no Docker Hub) =====
+STATIC_URL = '/static/'
+STATIC_ROOT = Path(__file__).resolve().parent.parent / "staticfiles"
+STATICFILES_DIRS = [ Path(__file__).resolve().parent.parent / "static" ]
+
+
 # Retenção do sistema em depósitos (%)
 PORCENTAGEM_RETENCAO = 0.12  # 12%
 
@@ -31,8 +37,6 @@ if ENV_PATH.exists():
 # settings.py
 ABACATEPAY_WEBHOOK_SECRET = "babuinosbobocasbalbiciandoembandohpgrifinoria"
 ABACATEPAY_PUBLIC_KEY = "t9dXRhHHo3yDEj5pVDYz0frf7q6bMKyMRmxxCPIPp3RCplBfXRxqlC6ZpiWmOqj4L63qEaeUOtrCI8P0VMUgo6iIga2ri9ogaHFs0WIIywSMg0q7RmBfybe1E5XJcfC4IW3alNqym0tXoAKkzvfEjZxV6bE0oG2zJrNNYmUCKZyV0KZ3JS8Votf9EAWWYdiDkMkpbMdPggfh1EqHlVkMiTady6jOR3hyzGEHrIz2Ret0xHKMbiqkr9HS1JhNHDX9"
-
-
 
 ABACATEPAY_BASE_URL = os.getenv("ABACATEPAY_BASE_URL", "https://api.abacatepay.com/v1")
 ABACATEPAY_API_KEY = os.getenv("ABACATEPAY_API_KEY", "")
@@ -53,20 +57,12 @@ SITE_BASE_URL = os.getenv("SITE_BASE_URL", "http://127.0.0.1:8000")
 
 
 # Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-&twz63=3149t^-1)6(p^a47oev391yc(w&o_pysxx@dqmaymto'
-
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
-#ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'testserver']
 ALLOWED_HOSTS = ['*']
 
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -83,6 +79,10 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+
+    # ===== ADICIONADO — necessário para servir CSS no Docker =====
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -94,12 +94,11 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'carona.urls'
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-
         'DIRS': [os.path.join(BASE_DIR, 'templates')],
-
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -116,8 +115,6 @@ WSGI_APPLICATION = 'carona.wsgi.application'
 
 
 # Database
-# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -126,51 +123,25 @@ DATABASES = {
 }
 
 
-# Password validation
-# https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    { 'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator', },
+    { 'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator', },
+    { 'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator', },
+    { 'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator', },
 ]
 
 
-# Internationalization
-# https://docs.djangoproject.com/en/5.2/topics/i18n/
-
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.2/howto/static-files/
-
+# Static files
 STATIC_URL = '/static/'
-
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
-]
-
+STATICFILES_DIRS = [ os.path.join(BASE_DIR, 'static') ]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -180,9 +151,6 @@ LOGIN_URL = 'usuarios:login'
 LOGIN_REDIRECT_URL = 'usuarios:pagina_inicial'
 LOGOUT_REDIRECT_URL = 'usuarios:login'
 
-# Fazer a sessão expirar ao fechar o navegador
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
-# Configuração da API do OpenRouteService
 ORS_API_KEY = 'eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6IjlmZjcxZGFiMTFiYjQ5MGQ5MDczOWI2MjBjYTA0MzUzIiwiaCI6Im11cm11cjY0In0='
-
